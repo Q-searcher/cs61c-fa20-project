@@ -28,7 +28,7 @@ Image *readData(char *filename)
 	FILE *file = fopen(filename, "r");
 	if(file == NULL){
 		perror("Error opening file");
-		return 1;
+		return 0;
 	}	
 	// 定义存储.ppm元数据的变量
 	char format[3];
@@ -43,8 +43,9 @@ Image *readData(char *filename)
 		fclose(file);
 		return 0;
 	}
-	img->rows = width;
-	img->cols = height;
+	
+	img->rows = height;
+	img->cols = width;
 	img->image = malloc(width * height * sizeof(Color));
 	
 	// 读取像素
@@ -52,7 +53,7 @@ Image *readData(char *filename)
 	for(int i = 0; i < height; i++){
 		// 遍历所有列
 		for(int j = 0; j < width; j++){
-			fscanf(file, "%hu %hu %hu", red, green, blue);
+			fscanf(file, "%hu %hu %hu", &red, &green, &blue);
 			img->image[i * width + j]->R = red;	
 			img->image[i * width + j]->G = green;	
 			img->image[i * width + j]->B = blue;	
@@ -66,11 +67,27 @@ Image *readData(char *filename)
 //Given an image, prints to stdout (e.g. with printf) a .ppm P3 file with the image's data.
 void writeData(Image *image)
 {
-	//YOUR CODE HERE
+	printf("P3\n");
+	printf("%d %d\n", image->rows, image->cols);
+	printf("255\n");
+
+	int i, j;
+
+	for(i = 0; i < image->rows; i++){
+		for(j = 0; j < (image->cols); j++){
+			printf("%3d %3d %3d", image->image[i][j].R, image->image[i][j].G, image->image[i][j].B);
+			if(j != image->cols - 1){
+				printf("   ");
+			}
+		}
+		printf("\n");
+	}
+	
 }
 
 //Frees an image
 void freeImage(Image *image)
 {
-	//YOUR CODE HERE
+	free(image->image);
+	free(image);
 }

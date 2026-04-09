@@ -46,7 +46,11 @@ Image *readData(char *filename)
 	
 	img->rows = height;
 	img->cols = width;
-	img->image = malloc(width * height * sizeof(Color));
+	// img->image = malloc(width * height * sizeof(Color));
+	img->image = malloc(height * sizeof(Color*));
+	for(int k = 0; k < height; k++){
+		img->image[k] = malloc(width * sizeof(Color));
+	}
 	
 	// 读取像素
 	// 遍历所有行
@@ -54,9 +58,9 @@ Image *readData(char *filename)
 		// 遍历所有列
 		for(int j = 0; j < width; j++){
 			fscanf(file, "%hu %hu %hu", &red, &green, &blue);
-			img->image[i * width + j]->R = red;	
-			img->image[i * width + j]->G = green;	
-			img->image[i * width + j]->B = blue;	
+			img->image[i][j].R = red;	
+			img->image[i][j].G = green;	
+			img->image[i][j].B = blue;	
 		}
 	}	
 
@@ -68,7 +72,7 @@ Image *readData(char *filename)
 void writeData(Image *image)
 {
 	printf("P3\n");
-	printf("%d %d\n", image->rows, image->cols);
+	printf("%d %d\n", image->cols, image->rows);
 	printf("255\n");
 
 	int i, j;
@@ -82,12 +86,14 @@ void writeData(Image *image)
 		}
 		printf("\n");
 	}
-	
 }
 
 //Frees an image
 void freeImage(Image *image)
 {
+	for(int i = 0; i < image->rows; i++){
+		free(image->image[i]);
+	}
 	free(image->image);
 	free(image);
 }

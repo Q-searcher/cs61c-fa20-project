@@ -28,14 +28,88 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 		printf("failed to allocate memory");
 		return NULL;
 	}
-	
+	new_color->R = 0;
+	new_color->G = 0;
+	new_color->B = 0;
+	// 基于模运算（mod）实现环绕的网格
+
+	int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+	int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+	for(int bitCounter = 0; bitCounter < 8; bitCounter++){
+		// 取出此刻的最低位
+		int aliveR, aliveG, aliveB;
+		aliveR = image->image[row][col].R >> bitCounter & 1;
+		aliveG = image->image[row][col].G >> bitCounter & 1;
+		aliveB = image->image[row][col].B >> bitCounter & 1;
+
+		// mod方法实现环绕网格
+		int alive_global_R = 0;
+		int alive_global_G = 0;
+		int alive_global_B = 0;
+
+		for(int i = 0; i < 8; i++){
+			int nx = ( row + dx[i] + image->rows ) % image->rows;
+			int ny = ( col + dy[i] + image->cols ) % image->cols;
+
+			if((image->image[nx][ny].R >> bitCounter & 1) == 1){
+				alive_global_R++;
+			}			
+			if((image->image[nx][ny].G >> bitCounter & 1) == 1){
+				alive_global_G++;
+			}	
+			if((image->image[nx][ny].B >> bitCounter & 1) == 1){
+				alive_global_B++;
+			}	
+		}		
+		// 如果中心的状态为alive
+		int bitJudgeR = (rule >> ((aliveR * 9) + alive_global_R)) & 1;
+		new_color->R = new_color->R | (bitJudgeR << bitCounter);	
+
+		int bitJudgeG = (rule >> ((aliveG * 9) + alive_global_G)) & 1;
+		new_color->G = new_color->G | (bitJudgeG << bitCounter);	
+
+		int bitJudgeB = (rule >> ((aliveB * 9) + alive_global_B)) & 1;
+		new_color->B = new_color->B | (bitJudgeB << bitCounter);	
+	}
+	return new_color;
 }
 
 //The main body of Life; given an image and a rule, computes one iteration of the Game of Life.
 //You should be able to copy most of this from steganography.c
 Image *life(Image *image, uint32_t rule)
 {
-	//YOUR CODE HERE
+	Image *newImage = malloc(sizeof(Image));
+	if(newImage == NULL){
+		printf("failed to malloc memory");
+		return NULL;
+	}
+	newImage->image = malloc(image->rows * sizeof(Color*));
+	if(newImage->image == NULL){
+		printf("failed to malloc memory");
+		return NULL;
+	}
+	for(int i = 0; i < image->rows; i++){
+		newImage->image[i] = malloc(image->cols * sizeof(Color));
+		if(newImage->image[i] == NULL){
+			printf("failed to malloc memory");
+			return NULL;
+		}
+	}
+
+	// transfer the old to the new
+	newImage->cols = image->cols;
+	newImage->rows = image->rows;
+
+	for(int i = 0; i < image->rows; i++){
+		for(int j = 0; j < image->cols; j++){
+			Color *temp_color = evaluateOneCell(image, i, j, rule);
+			newImage->image[i][j].R = temp_color->R;
+			newImage->image[i][j].G = temp_color->G;
+			newImage->image[i][j].B = temp_color->B;
+			free(temp_color);
+		}
+	}
+	return newImage;
 }
 
 /*
@@ -55,5 +129,28 @@ You may find it useful to copy the code from steganography.c, to start.
 */
 int main(int argc, char **argv)
 {
-	//YOUR CODE HERE
+	// 检查参数的输入
+	if(argc != 3){
+		printf("usage: ./gameOfLife filename rule\n");
+		printf("filename is an ASCII PPM file (type P3) with maximum value 255.\n");
+		printf("rule is a hex number beginning with 0x; Life is 0x1808.");
+		return -1;
+	}
+
+	Image *img = readData(argv[1]);
+	if(img == NULL){
+		printf("failed to read %s", argv[1]);
+		return -1;
+	}
+	uint32_t rule = *argv[2];
+	Image *newImage = life(img, rule);
+	if(newImage == NULL){
+		printf("failed to create nweImage");
+		return -1;
+	}
+	
+	writeData(newImage);
+	freeImage(img);
+	freeImage(newImage);
+	return 0;
 }

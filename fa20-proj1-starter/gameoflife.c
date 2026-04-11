@@ -22,7 +22,13 @@
 //and the left column as adjacent to the right column.
 Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 {
-	//YOUR CODE HERE
+	// allocate memory
+	Color *new_color = malloc(sizeof(Color));
+	if(new_color == NULL){
+		printf("failed to allocate memory");
+		return NULL;
+	}
+	
 }
 
 //The main body of Life; given an image and a rule, computes one iteration of the Game of Life.

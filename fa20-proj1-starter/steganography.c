@@ -43,9 +43,21 @@ Image *steganography(Image *image)
 {
 	// allocate memory
 	Image *newImage = malloc(sizeof(Image));
+	if(newImage == NULL){
+		printf("failed to malloc memory");
+		return NULL;
+	}
 	newImage->image = malloc(image->rows * sizeof(Color*));
+	if(newImage->image == NULL){
+		printf("failed to malloc memory");
+		return NULL;
+	}
 	for(int i = 0; i < image->rows; i++){
 		newImage->image[i] = malloc(image->cols * sizeof(Color));
+		if(newImage->image[i] == NULL){
+			printf("failed to malloc memory");
+			return NULL;
+		}
 	}
 
 	// transfer the old to the new
@@ -61,6 +73,7 @@ Image *steganography(Image *image)
 			free(temp_color);
 		}
 	}
+	return newImage;
 }
 
 /*
@@ -72,7 +85,7 @@ argc stores the number of arguments.
 argv stores a list of arguments. Here is the expected input:
 argv[0] will store the name of the program (this happens automatically).
 argv[1] should contain a filename, containing a file of ppm P3 format (not necessarily with .ppm file extension).
-If the input is not correct, a malloc fails, or any other error occurs, you should exit with code -1.
+If the input is not correct, a malloc fails, or any other error occurs, you should exit with code NULL.
 Otherwise, you should return from main with code 0.
 Make sure to free all memory before returning!
 */
@@ -84,5 +97,18 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-
+	Image *img = readData(argv[1]);
+	if(img == NULL){
+		printf("failed to read %s", argv[1]);
+		return -1;
+	}
+	Image *newImage = steganography(img);
+	if(newImage == NULL){
+		printf("failed to create nweImage");
+		return -1;
+	}
+	writeData(newImage);
+	freeImage(img);
+	freeImage(newImage);
+	return 0;
 }

@@ -28,7 +28,7 @@ Image *readData(char *filename)
 	FILE *file = fopen(filename, "r");
 	if(file == NULL){
 		perror("Error opening file");
-		return 0;
+		return NULL;
 	}	
 	// 定义存储.ppm元数据的变量
 	char format[3];
@@ -41,7 +41,7 @@ Image *readData(char *filename)
 	if(fscanf(file, "%s %d %d %d", format, &width, &height, &scale) != 4){
 		printf("failed to read data from file. \n");
 		fclose(file);
-		return 0;
+		return NULL;
 	}
 	
 	img->rows = height;

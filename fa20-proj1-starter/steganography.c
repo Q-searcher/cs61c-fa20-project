@@ -21,13 +21,46 @@
 //Determines what color the cell at the given row/col should be. This should not affect Image, and should allocate space for a new Color.
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
-	//YOUR CODE HERE
+	Color *newColor = malloc(sizeof(Color));
+
+	int lsb_blue = image->image[row][col].B & 1;
+	// 读取给定的行、列的像素，确定蓝色最低位的值
+	if(lsb_blue == 1){
+		lsb_blue = 255;
+	}
+	else{
+		lsb_blue = 0;
+	}
+	newColor->R = lsb_blue;
+	newColor->G = lsb_blue;
+	newColor->B = lsb_blue;
+
+	return newColor;
 }
 
 //Given an image, creates a new image extracting the LSB of the B channel.
 Image *steganography(Image *image)
 {
-	//YOUR CODE HERE
+	// allocate memory
+	Image *newImage = malloc(sizeof(Image));
+	newImage->image = malloc(image->rows * sizeof(Color*));
+	for(int i = 0; i < image->rows; i++){
+		newImage->image[i] = malloc(image->cols * sizeof(Color));
+	}
+
+	// transfer the old to the new
+	newImage->cols = image->cols;
+	newImage->rows = image->rows;
+
+	for(int i = 0; i < image->rows; i++){
+		for(int j = 0; j < image->cols; j++){
+			Color *temp_color = evaluateOnePixel(image, i, j);  
+			newImage->image[i][j].R = temp_color->R;
+			newImage->image[i][j].G = temp_color->G;
+			newImage->image[i][j].B = temp_color->B;
+			free(temp_color);
+		}
+	}
 }
 
 /*
@@ -45,5 +78,11 @@ Make sure to free all memory before returning!
 */
 int main(int argc, char **argv)
 {
-	//YOUR CODE HERE
+	// 检查参数的输入
+	if(argc != 2){
+		printf("input is not correct!");
+		return -1;
+	}
+
+
 }

@@ -21,3 +21,8 @@
 2. `writeData` write an Image struct in its PPM format to standard output
 3. `freeImage` free an Image object. 
 
+### Part A2
+在`steganography.c`中，实现`evaluateOnePixel`, `steganography`, `main`函数
+1. `evaluateOnePixel`确定给定行/列位置的单元格应是什么颜色。该操作不应影响原图像（Image），并且应为新的颜色（Color）分配内存空间。
+2. `steganography`, 给定一张图像，创建一张新图像，从蓝色通道（B 通道）中提取最低有效位（LSB）
+3. `main`函数

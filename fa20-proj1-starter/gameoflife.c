@@ -100,9 +100,12 @@ Image *life(Image *image, uint32_t rule)
 	newImage->cols = image->cols;
 	newImage->rows = image->rows;
 
+
+	
 	for(int i = 0; i < image->rows; i++){
 		for(int j = 0; j < image->cols; j++){
 			Color *temp_color = evaluateOneCell(image, i, j, rule);
+	
 			newImage->image[i][j].R = temp_color->R;
 			newImage->image[i][j].G = temp_color->G;
 			newImage->image[i][j].B = temp_color->B;
@@ -142,7 +145,7 @@ int main(int argc, char **argv)
 		printf("failed to read %s", argv[1]);
 		return -1;
 	}
-	uint32_t rule = *argv[2];
+	uint32_t rule = (uint32_t) strtol(argv[2], NULL, 16);	
 	Image *newImage = life(img, rule);
 	if(newImage == NULL){
 		printf("failed to create nweImage");

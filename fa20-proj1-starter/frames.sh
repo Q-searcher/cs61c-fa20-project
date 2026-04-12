@@ -58,6 +58,6 @@ done
 echo ""
 echo "Making gif in $name.gif"
 
-convert -delay 20 -loop 0 -scale 400% "$outdir/$name/"*.ppm ""$outdir/$name.gif""
+convert -delay 20 -loop 0 -scale 400% "$outdir/$name/"*.ppm "$outdir/$name.gif"
 
 echo ""

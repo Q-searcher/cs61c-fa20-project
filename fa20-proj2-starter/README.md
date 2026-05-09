@@ -26,3 +26,8 @@
 
 
 ## Here's what I did in project 2:
+
+### Task 1: Relu Function
+
+1. Relu function operates on a 1-D vector
+2. the matrix is stored in a row-major format

@@ -13,26 +13,37 @@
 #   this function terminates the program with error code 78.
 # ==============================================================================
 relu:
+   
     # Prologue
-
+    addi t1, x0, 1
+    
+    addi t0, x0, 0                  # int i = 0
+    mv t3, a0                       # safe the address of the array in s1
+    
+    blt t1, a1, loop_start          # if a1 > (t1 = 1), jump to the position of loop_start
+    
+    # terminate the function with error code 78
+    li a0, 78
+    li a7, 93
+    ecall
 
 loop_start:
     
-
-
-
-
-
-
-
+    beq t0, a1, loop_end            # if (i < array.length)
+    addi t0, t0, 1              
+    # if not equal
+ 
+    lw t2, 0(t3)
+    blt x0, t2, loop_continue       # if (0 < array[i])
+    sw x0, 0(t3)
+    
 loop_continue:
-
-
-
+    
+    addi t3, t3, 4
+    j loop_start
+    
 loop_end:
-
 
     # Epilogue
 
-    
 	ret

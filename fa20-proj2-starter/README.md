@@ -49,3 +49,24 @@
     }
     return index;
 ```
+
+### Task 3.1: Dot Product
+
+implement the dot function in `dot.s`, which take in two vector and returns their dot product
+
+1. remember to consider the stride for each vector
+2. lenth less than 1, return 75
+3. stride less than 1, return 76
+
+```c++
+    if (vector.length < 1) return 75;
+    if (stride < 1) return 76
+    int result = 0;
+    int tempValue;
+
+    for (int i = 0; i < array.length; i++) {
+        tempValue = array_1[i] * array_2[i];
+        result += tempValue;
+    }
+    return result
+```

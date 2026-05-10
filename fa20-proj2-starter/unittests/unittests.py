@@ -137,20 +137,84 @@ class TestArgmax(TestCase):
 
 
 class TestDot(TestCase):
-    def test_simple(self):
+    def test_simple1(self):
         t = AssemblyTest(self, "dot.s")
         # create arrays in the data section
-        raise NotImplementedError("TODO")
-        # TODO
+        # raise NotImplementedError("TODO")
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array2 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
         # load array addresses into argument registers
-        # TODO
+        t.input_array("a0", array1)
+        t.input_array("a1", array2)
         # load array attributes into argument registers
-        # TODO
+        t.input_scalar("a2", 9)
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 1)
+
+    
         # call the `dot` function
         t.call("dot")
         # check the return value
-        # TODO
+        t.check_scalar("a0", 285)
         t.execute()
+
+    def test_simple2(self):
+        t = AssemblyTest(self, "dot.s")
+        # create arrays in the data section
+        # raise NotImplementedError("TODO")
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array2 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        # load array addresses into argument registers
+        t.input_array("a0", array1)
+        t.input_array("a1", array2)
+        # load array attributes into argument registers
+        t.input_scalar("a2", 3)
+        t.input_scalar("a3", 2)
+        t.input_scalar("a4", 1)
+
+    
+        # call the `dot` function
+        t.call("dot")
+        # check the return value
+        t.check_scalar("a0", 22)
+        t.execute()
+    
+    def test_error1(self):
+        t = AssemblyTest(self, "dot.s")
+        array1 = t.array([])
+        array2 = t.array([])
+        t.input_array("a0", array1)
+        t.input_array("a1", array2)
+        t.input_scalar("a2", len(array1))
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 1)
+        t.call("dot")
+        t.execute(code=75)
+    
+    def test_error2(self):
+        t = AssemblyTest(self, "dot.s")
+        array1 = t.array([1, 2, 3])
+        array2 = t.array([1, 2, 3])
+        t.input_array("a0", array1)
+        t.input_array("a1", array2)
+        t.input_scalar("a2", len(array1))
+        t.input_scalar("a3", 0)
+        t.input_scalar("a4", 1)
+        t.call("dot")
+        t.execute(code=76)
+
+    def test_error3(self):
+        t = AssemblyTest(self, "dot.s")
+        array1 = t.array([1, 2, 3])
+        array2 = t.array([1, 2, 3])
+        t.input_array("a0", array1)
+        t.input_array("a1", array2)
+        t.input_scalar("a2", len(array1))
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 0)
+        t.call("dot")
+        t.execute(code=76)
+
 
     @classmethod
     def tearDownClass(cls):

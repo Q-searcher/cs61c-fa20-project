@@ -20,13 +20,8 @@ relu:
     addi t0, x0, 0                  # int i = 0
     mv t3, a0                       # safe the address of the array in s1
     
-    blt t1, a1, loop_start          # if a1 > (t1 = 1), jump to the position of loop_start
+    blt a1, t1, error          # if a1 > (t1 = 1), jump to the position of loop_start
     
-    # terminate the function with error code 78
-    li a0, 78
-    li a7, 93
-    ecall
-
 loop_start:
     
     beq t0, a1, loop_end            # if (i < array.length)
@@ -45,5 +40,10 @@ loop_continue:
 loop_end:
 
     # Epilogue
-
 	ret
+    
+error:
+    # terminate the function with error code 78
+    li a0, 78
+    li a7, 93
+    ecall

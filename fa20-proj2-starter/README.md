@@ -70,3 +70,24 @@ implement the dot function in `dot.s`, which take in two vector and returns thei
     }
     return result
 ```
+### Task 3.2: Matrix Multiplication
+
+1. `m0`is the left matrix, and `m1` is the right matrix
+2.  The stride for row vectors will be different than the stride for column vectors when calling the dot function
+3.  you can't cover the origin matrix until you finish the loop
+
+```c++
+    if (row1.length < 1) return 72;
+    if (column1.length < 1) return 72;
+
+    if (row2.length < 1) return 73;
+    if (column2.length < 1) return 73;
+
+    if (column1.length != row2.length) return 74;
+
+    for (int i = 0; i < column1.length(m); i++) {
+        for (int j = 0; j < row2.length(n); j++) {
+            dot(m0, m1);
+        }
+    }
+```

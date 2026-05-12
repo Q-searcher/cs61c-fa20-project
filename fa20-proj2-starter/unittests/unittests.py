@@ -234,7 +234,6 @@ class TestMatmul(TestCase):
         array_out = t.array([0] * len(result))
 
         # load address of input matrices and set their dimensions
-        # raise NotImplementedError("TODO")
         t.input_array("a0", array0)
         t.input_array("a3", array1)
         t.input_scalar("a1", m0_rows)
@@ -251,6 +250,15 @@ class TestMatmul(TestCase):
             t.check_array(array_out, result)
         # generate the assembly file and run it through venus, we expect the simulation to exit with code `code`
         t.execute(code=code)
+
+
+    def test_simple_matrix(self):
+        self.do_matmul(
+            [1], 1, 1,
+            [1], 1, 1,
+            [1],
+            code=0
+        )
 
     def test_simple(self):
         self.do_matmul(
@@ -276,6 +284,85 @@ class TestMatmul(TestCase):
             code=72
         )
 
+    def test_invalid_matrix2(self):
+        self.do_matmul(
+            [1, 2, 3, 4], 1, 4,
+            [1, 2, 3, 4], 4, 0,
+            [],
+            code=73
+        )
+    def test_2x2_matrix(self):
+        self.do_matmul(
+            [1, 2, 3, 4], 2, 2,  # m0: 2x2
+            [5, 6, 7, 8], 2, 2,  # m1: 2x2
+            [19, 22, 43, 50],    # 结果: 2x2
+            code=0
+        )
+    def test_row_vector_times_column_vector(self):
+        self.do_matmul(
+            [1, 2, 3], 1, 3,      # m0: 1x3
+            [4, 5, 6], 3, 1,      # m1: 3x1
+            [32],                  # 结果: 1x1 (1*4 + 2*5 + 3*6 = 32)
+            code=0
+        )
+    def test_column_vector_times_row_vector(self):
+        self.do_matmul(
+            [1, 2, 3], 3, 1,      # m0: 3x1
+            [4, 5], 1, 2,         # m1: 1x2
+            [4, 5, 8, 10, 12, 15],  # 结果: 3x2
+            code=0
+        )
+    def test_negative_values(self):
+        self.do_matmul(
+            [-1, 2, -3], 1, 3,    # m0: 1x3
+            [4, -5, 6], 3, 1,     # m1: 3x1
+            [-4 - 10 - 18],       # 结果: 1x1 (-1*4 + 2*(-5) + (-3)*6 = -4 -10 -18 = -32)
+            code=0
+        )
+    def test_zero_matrix(self):
+        self.do_matmul(
+            [0, 0, 0, 0], 2, 2,  # m0: 2x2 全零
+            [1, 2, 3, 4], 2, 2,  # m1: 2x2
+            [0, 0, 0, 0],        # 结果: 2x2 全零
+            code=0
+        )
+    def test_large_matrix(self):
+        self.do_matmul(
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 4, 3,  # m0: 4x3
+            [1, 2, 3, 4, 5, 6], 3, 2,                        # m1: 3x2
+            [22, 28, 49, 64, 76, 100, 103, 136],             # 结果: 4x2
+            code=0
+        )
+    def test_1x1_different_values(self):
+        self.do_matmul(
+            [7], 1, 1,
+            [3], 1, 1,
+            [21],  # 7*3=21
+            code=0
+        )
+    def test_invalid_matrix1_rows_zero(self):
+        self.do_matmul(
+            [1, 2], 1, 2,
+            [], 0, 1,  # m1 行数=0
+            [],
+            code=73
+        )
+    def test_invalid_matrix1_cols_zero(self):
+        self.do_matmul(
+            [1, 2], 1, 2,
+            [1], 1, 0,  # m1 列数=0
+            [],
+            code=73
+        )
+    def test_dimension_mismatch_cols_greater(self):
+        self.do_matmul(
+            [1, 2, 3, 4, 5, 6], 2, 3,  # m0: 2x3
+            [1, 2], 2, 1,               # m1: 2x1, 但 m0_cols=3 != m1_rows=2
+            [],
+            code=74
+        )
+    
+        
     @classmethod
     def tearDownClass(cls):
         print_coverage("matmul.s", verbose=False)

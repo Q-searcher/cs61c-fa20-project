@@ -28,21 +28,23 @@ matmul:
     # Test the arguement passed into the function
     # Error checks
     addi t0, x0, 1
-    bne a2, a4, error3
     
     blt a1, t0, error1                      # if (height1 < 1)
     blt a2, t0, error1
     blt a4, t0, error2
     blt a5, t0, error2
+    bne a2, a4, error3
+
       
-    addi sp, sp, -28
+    addi sp, sp, -32
     sw s0, 0(sp)
     sw s1, 4(sp)
     sw s2, 8(sp)
     sw s3, 12(sp)
     sw s4, 16(sp)
     sw s5, 20(sp)
-    sw s6, 24(sp)    
+    sw s6, 24(sp)   
+    sw ra, 28(sp)
 
     
     mv s0, a0                               # m0 ptr1
@@ -53,20 +55,18 @@ matmul:
     mv s5, a5                               # m1 width2
     mv s6, a6                               # pointer to the start
         
-    mv t0, s1                               # safe the value of height1
-    mv t1, s5                               # safe the value of width2
     addi t0, x0, 0                          # int i = 0
     # Prologue
 
 outer_loop_start:
     
-    beq t0, s0, outer_loop_end              # while (i != m0_height)
+    beq t0, s1, outer_loop_end              # while (i != m0_height)
     
     addi t1, x0, 0                          # int j = 0
    
 inner_loop_start:
     
-    beq t1, s1, inner_loop_end              # while (h != m1_weight)
+    beq t1, s5, inner_loop_end              # while (j != m1_width)
 
     # pass the arguement, and call function d
     # 1. pass the address  
@@ -87,7 +87,7 @@ inner_loop_start:
     sw t0, 0(sp)
     sw t1, 4(sp)
     
-    jalr ra, s6, 0                          # call the function
+    jal ra, dot                          # call the function
     
     lw t0, 0(sp)
     lw t1, 4(sp)
@@ -114,6 +114,7 @@ inner_loop_end:
 
 outer_loop_end:
 
+    lw ra, 28(sp)
     lw s6, 24(sp)
     lw s5, 20(sp)
     lw s4, 16(sp)
@@ -122,7 +123,7 @@ outer_loop_end:
     lw s1, 4(sp)
     lw s0, 0(sp)
 
-    addi sp, sp, 28
+    addi sp, sp, 32
     
     ret
     

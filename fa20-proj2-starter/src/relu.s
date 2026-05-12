@@ -44,6 +44,7 @@ loop_end:
     
 error:
     # terminate the function with error code 78
-    li a0, 78
-    li a7, 93
+
+    li a0, 17
+    li a1, 78
     ecall

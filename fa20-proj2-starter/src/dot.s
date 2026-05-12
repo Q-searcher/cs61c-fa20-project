@@ -52,15 +52,13 @@ loop_end:
     ret
 
 error1:
-    li a0, 75
-    li a7, 93
+
+    li a0, 17
+    li a1, 75
     ecall
-    j end
 
 error2:
-    li a0, 76
-    li a7, 93
-    ecall
-    j end
 
-end:
+    li a0, 17
+    li a1, 76
+    ecall

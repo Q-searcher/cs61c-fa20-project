@@ -43,12 +43,7 @@ matmul:
     sw s4, 16(sp)
     sw s5, 20(sp)
     sw s6, 24(sp)    
-    # create a new matrix
-    
-#     mul t0, a1, a5                          # size = (height1 * width2) * (sizeof(int))
-#     slli t0, t0, 2
-#     sub sp, sp, t0
-#     mv a6, sp                               # store the address of the matrix
+
     
     mv s0, a0                               # m0 ptr1
     mv s1, a1                               # m0 height1
@@ -119,11 +114,6 @@ inner_loop_end:
 
 outer_loop_end:
 
-    # Epilogue 
-#     mul t0, s1, s5                          # size = (height1 * width2) * (sizeof(int))
-#     slli t0, t0, 2
-#     add sp, sp, t0
-    
     lw s6, 24(sp)
     lw s5, 20(sp)
     lw s4, 16(sp)
@@ -137,24 +127,19 @@ outer_loop_end:
     ret
     
 error1:
-    li a0, 72
-    li a7, 93
+    li a0, 17
+    li a1, 72
     ecall
-    j end
     
 error2:
-    li a0, 73
-    li a7, 93
+    li a0, 17
+    li a1, 73
     ecall
-    j end
     
 error3:
-    li a0, 74
-    li a7, 93
+    li a0, 17
+    li a1, 74
     ecall
-    j end
-
-end:
 
 
 

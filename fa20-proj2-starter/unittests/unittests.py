@@ -223,7 +223,7 @@ class TestDot(TestCase):
 
 class TestMatmul(TestCase):
 
-    def do_matmul(self, m0, m0_rows, m0_cols, m1, m1_rows, m1_cols, result, code=0):
+    def do_matmul(self, m0, m0_rows, m0_cols, m1, m1_rows, m1_cols, result, code):
         t = AssemblyTest(self, "matmul.s")
         # we need to include (aka import) the dot.s file since it is used by matmul.s
         t.include("dot.s")
@@ -256,7 +256,8 @@ class TestMatmul(TestCase):
         self.do_matmul(
             [1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3,
             [1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3,
-            [30, 36, 42, 66, 81, 96, 102, 126, 150]
+            [30, 36, 42, 66, 81, 96, 102, 126, 150],
+            code=0
         )
 
     def test_invalid_dimensions(self):
@@ -266,11 +267,11 @@ class TestMatmul(TestCase):
             [],
             code=74
         )
-        
+
     def test_invalid_matrix1(self):
         self.do_matmul(
-            [1, 2, 3, 4], 2, 0,
-            [1, 2, 3], 3, 1,
+            [1, 2, 3, 4], 0, 2,
+            [1, 2], 2, 1,
             [],
             code=72
         )

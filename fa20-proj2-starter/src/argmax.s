@@ -44,6 +44,6 @@ loop_end:
     
 error:
     # terminates the program with error code 77
-    li a0, 77
-    li a7, 93
+    li a0, 17
+    li a1, 77
     ecall

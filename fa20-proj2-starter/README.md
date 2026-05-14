@@ -26,6 +26,8 @@
 
 ## Here's what I did in project 2
 
+## Part A
+
 ### Task 1: Relu Function
 
 1. Relu function operates on a 1-D vector
@@ -91,4 +93,37 @@ implement the dot function in `dot.s`, which take in two vector and returns thei
             dot(m0, m1);
         }
     }
+```
+
+## Part B
+
+- remember that the first and second 4 bytes representing the dimensions and the rest are integer elements of the matrix
+- the `utils.s` provide lots of useful function to call with
+
+### Task 1: Read Matrix
+
+1. The first 8 bytes are two 4 byte ints representing the length of rows and columns in the matrix
+2. return a0 (int*)  is the pointer to the matrix in memory
+
+```c++
+    FILE newFile = fopen("fileName");
+    if (newFile == NULL) return 90;
+
+    fread("fileName", "8 Bytes");          // get the rows and columns
+    if (fail) return ...
+
+    int numValue = rows * column
+    int *matrix = malloc(sizeof(numValues));
+    if (fail) return ...
+
+    for (int i = 0; i < numValue; i++) {
+        fread("fileName", "4 Bytes");
+        if (fail) return ...
+    }
+
+    fclose("fileName")
+    if (fail) return ...
+
+    free(matrix)
+
 ```

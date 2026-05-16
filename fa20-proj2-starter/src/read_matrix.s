@@ -62,12 +62,13 @@ read_matrix:
     sw a0, 0(sp)
     jal ra, num_alloc_blocks
     addi t0, x0, 1
-    beq a0, t0, error2
+    bne a0, t0, error2
     lw a0, 0(sp)
     addi sp, sp, 4
     # Epilogue
     mv a2, a0
     mv s4, a0 
+    
     lw a1, 0(sp)
     addi sp, sp, 4      
     
@@ -106,7 +107,7 @@ read_matrix:
     sw a0, 0(sp)
     jal ra, num_alloc_blocks
     addi t0, x0, 1
-    beq a0, t0, error2
+    bne a0, t0, error2
     lw a0, 0(sp)
     addi sp, sp, 4
     # Epilogue

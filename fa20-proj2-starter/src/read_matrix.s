@@ -29,6 +29,9 @@ read_matrix:
     # Prologue
 	# safe the arguments in s register
     
+    addi sp, sp, -4
+    sw ra, 0(sp)
+    
     addi sp, sp, -20
     sw s0, 0(sp)
     sw s1, 4(sp)
@@ -55,17 +58,30 @@ read_matrix:
     sw a1, 0(sp)                        # protect the value in a1
     
     addi a0, x0, 8
+    
+#     addi sp, sp, -4
+#     sw a0, 0(sp)
+#     jal ra, num_alloc_blocks            # store the size of before_heap_block in a0
+#     mv s0, a0
+#     lw a0, 0(sp)
+#     addi sp, sp, 4
+    
     jal ra malloc  
-    # check whether malloc is success or not, use num_alloc_blocks:
+    # check whether malloc is success or not
+    # If malloc hook forces a0==0 we should treat it as failure.
+    beq a0, x0, error2
+    # also verify allocator bookkeeping (num_alloc_blocks)
     # Prologue
-    addi sp, sp, -4
-    sw a0, 0(sp)
-    jal ra, num_alloc_blocks
-    addi t0, x0, 1
-    bne a0, t0, error2
-    lw a0, 0(sp)
-    addi sp, sp, 4
+#     addi sp, sp, -4
+#     sw a0, 0(sp)
+#     jal ra, num_alloc_blocks
+#     sub t1, a0, s0
+#     addi t0, x0, 1
+#     bne t1, t0, error2
+#     lw a0, 0(sp)
+#     addi sp, sp, 4
     # Epilogue
+    
     mv a2, a0
     mv s4, a0 
     
@@ -100,17 +116,29 @@ read_matrix:
     # prepare the arguement for malloc
     slli t0, t0, 2
     mv a0, t0
+    
+#     addi sp, sp, -4
+#     sw a0, 0(sp)
+#     jal ra, num_alloc_blocks            # store the size of before_heap_block in a0
+#     mv s0, a0
+#     lw a0, 0(sp)
+#     addi sp, sp, 4
+    
     jal ra, malloc
-    # check whether malloc is success or not, use num_alloc_blocks:
+    # check whether malloc is success or not
+    beq a0, x0, error2
+    # check allocator bookkeeping (num_alloc_blocks)
     # Prologue
-    addi sp, sp, -4
-    sw a0, 0(sp)
-    jal ra, num_alloc_blocks
-    addi t0, x0, 1
-    bne a0, t0, error2
-    lw a0, 0(sp)
-    addi sp, sp, 4
+#     addi sp, sp, -4
+#     sw a0, 0(sp)
+#     jal ra, num_alloc_blocks            # store the size of heap_block in a0
+#     sub t1, a0, s0
+#     addi t0, x0, 1
+#     bne t1, t0, error2
+#     lw a0, 0(sp)
+#     addi sp, sp, 4
     # Epilogue
+    
     mv s4, a0                           # store the address of allocated memory
     
     # start loop, getting all the value of the matrix
@@ -118,7 +146,7 @@ read_matrix:
     lw t0, 0(s1)
     lw t1, 0(s2)
     mul s0, t0, t1
-    addi t0, x0, 0                      # int i = 0
+    add t0, x0, x0                      # int i = 0
     mv t1, s4                           # a pointer pointing to the beginning of the alloclated memory
    
    # t0, t1 needed to be stored if call other function
@@ -126,10 +154,10 @@ loop_start:
     beq t0, s0, loop_end
     # prepare the arguements for fread
     mv a1, s3                           # a1 = file descriptor
-    slli t2, t0, 2                      # claculate the offset
-    add t1, t1, t2                      # pointer += 1
+    # slli t2, t0, 2                      # claculate the offset
+    # addi t1, t1, 4                      # pointer += 1
     mv a2, t1                           # a2 = the buffer you want to write the bytes to
-    li a3, 4                            # a3 = number of bytes you read
+    addi a3, x0, 4                      # a3 = number of bytes you read
     
     # safe t0, t1 and then call the fread function
     addi sp, sp, -8
@@ -142,9 +170,10 @@ loop_start:
     bne t0, a0, error3    
     # Epilogue
     lw t0, 0(sp)
-    lw t1, 0(sp)
+    lw t1, 4(sp)
     addi sp, sp, 8
     
+    addi t1, t1, 4
     addi t0, t0, 1                      # i++
 
     j loop_start
@@ -161,6 +190,7 @@ loop_end:
     # Epilogue
     
     mv a0, s4
+    
          
     lw s0, 0(sp)
     lw s1, 4(sp)
@@ -168,6 +198,9 @@ loop_end:
     lw s3, 12(sp)
     lw s4, 16(sp)
     addi sp, sp, 20
+    
+    lw ra, 0(sp)
+    addi sp, sp, 4
 
     # Epilogue
     ret

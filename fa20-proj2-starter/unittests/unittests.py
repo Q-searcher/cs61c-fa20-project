@@ -370,17 +370,16 @@ class TestMatmul(TestCase):
 
 class TestReadMatrix(TestCase):
 
-    def do_read_matrix(self, fail='', code=0):
+    def do_read_matrix(self, filename, fail='', code=0):
         t = AssemblyTest(self, "read_matrix.s")
         # load address to the name of the input file into register a0
-        t.input_read_filename("a0", "inputs/test_read_matrix/test_input.bin")
+        t.input_read_filename("a0", filename)
 
         # allocate space to hold the rows and cols output parameters
         rows = t.array([-1])
         cols = t.array([-1])
 
         # load the addresses to the output parameters into the argument registers
-        # TODO
         t.input_array("a1", rows)
         t.input_array("a2", cols)
 
@@ -388,15 +387,33 @@ class TestReadMatrix(TestCase):
         t.call("read_matrix")
 
         # check the output from the function
-        # TODO
         t.check_array(rows, [3])
         t.check_array(cols, [3])
+
+        # check returned matrix pointer contents
+        t.check_array_pointer("a0", [1, 2, 3, 4, 5, 6, 7, 8, 9])
 
         # generate assembly and run it through venus
         t.execute(fail=fail, code=code)
 
     def test_simple(self):
-        self.do_read_matrix()
+        self.do_read_matrix("inputs/test_read_matrix/test_input.bin")
+
+    def test_file_not_found(self):
+        # Missing input file should terminate with code 90
+        self.do_read_matrix("inputs/test_read_matrix/no_such_file.bin", code=90)
+
+    def test_malloc_failure(self):
+        # malloc failure should terminate with code 88
+        self.do_read_matrix("inputs/test_read_matrix/test_input.bin", fail='malloc', code=88)
+
+    def test_fread_failure(self):
+        # fread failure should terminate with code 91
+        self.do_read_matrix("inputs/test_read_matrix/test_input.bin", fail='fread', code=91)
+
+    def test_fclose_failure(self):
+        # fclose failure should terminate with code 92
+        self.do_read_matrix("inputs/test_read_matrix/test_input.bin", fail='fclose', code=92)
 
     @classmethod
     def tearDownClass(cls):

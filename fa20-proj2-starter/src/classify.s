@@ -140,7 +140,7 @@ classify:
     mv a1, t3                               # a1 = m0_row
     mv a2, t4                               # a2 = m0_column
 
-    mv a3, s4                               # a3 (int*)  is the pointer to the start of m1
+    mv a3, s5                               # a3 (int*)  is the pointer to the start of input (second matrix)
     lw t3, 16(sp)
     lw t4, 20(sp)
     mv a4, t3                               # a4 = input_row

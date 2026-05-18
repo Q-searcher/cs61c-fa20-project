@@ -75,7 +75,7 @@ write_matrix:
     # epilpgue
     
     # close the file
-    mv a1, s3
+    mv a1, s0
     jal ra, fclose
     # test
     # Prologue

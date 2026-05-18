@@ -114,6 +114,7 @@ inner_loop_end:
 
 outer_loop_end:
 
+    mv a6, s6
     lw ra, 28(sp)
     lw s6, 24(sp)
     lw s5, 20(sp)

@@ -127,3 +127,21 @@ implement the dot function in `dot.s`, which take in two vector and returns thei
     free(matrix)
 
 ```
+
+### Task 2: Write Matrix
+
+- every value is in size of int, which means it take 4 bytes to save
+
+```c++
+    fopen(fileName);
+    check()
+
+    fwrite(row);
+    fwrite(column);
+
+    for (i =0; i < size; i++) {
+        fwrite(matrix[i]);
+    }
+
+    
+```

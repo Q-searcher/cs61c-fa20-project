@@ -25,11 +25,14 @@ classify:
     addi t0, x0, 5                         
     bne t0, a0, error1
 
-    addi sp, sp, -16
+    addi sp, sp, -28
     sw s0, 0(sp)
     sw s1, 4(sp)
     sw s2, 8(sp)
     sw ra, 12(sp)
+    sw s3, 16(sp)
+    sw s4, 20(sp)
+    sw s5, 24(sp)
 
     mv s0, a0
     mv s1, a1
@@ -44,12 +47,17 @@ classify:
     lw a0, 4(s1)                            # a0 = filename (argv[1])
     addi a1, sp, 0                          # a1 = int *
     addi a2, sp, 4                          # a2 = int *
+    mv s3, a1
+    mv s4, a2
     jal ra, read_matrix
     mv t0, a0                               # t0 = m0
     addi sp, sp, 8
 
-    sw a1, 0(sp)                            # vector[0] = m0_row
-    sw a2, 4(sp)                            # vector[1] = m0_column
+    lw t0, 0(s3)                            # m0_row
+    lw t1, 0(s4)                            # m0_column
+
+    sw t0, 0(sp)                            # vector[0] = m0_row
+    sw t1, 4(sp)                            # vector[1] = m0_column
     
     # Load pretrained m1
     addi sp, sp, -4
@@ -59,6 +67,8 @@ classify:
     lw a0, 8(s1)                            # a0 = filename (argv[2])
     addi a1, sp, 0                          # a1 = int *
     addi a2, sp, 4                          # a2 = int *
+    mv s3, a1
+    mv s4, a2
     jal ra, read_matrix
     mv t1, a0                               # t1 = m1
     addi sp, sp, 8
@@ -66,12 +76,15 @@ classify:
     lw t0, 0(sp)
     addi sp, sp, 4
 
-    sw a1, 8(sp)                            # vector[2] = m1_row
-    sw a2, 12(sp)                           # vector[3] = m1_column
+    lw t0, 0(s3)                            # m1_row
+    lw t1, 0(s4)                            # m1_column
+
+    sw t0, 8(sp)                            # vector[2] = m1_row
+    sw t1, 12(sp)                           # vector[3] = m1_column
 
     # Load input matrix
-
     addi sp, sp, -8
+
     sw t0, 0(sp)
     sw t1, 4(sp)
     
@@ -79,6 +92,8 @@ classify:
     lw a0, 12(s1)                           # a0 = filename (argv[3])
     addi a1, sp, 0                          # a1 = int *
     addi a2, sp, 4                          # a2 = int *
+    mv s3, a1
+    mv s4, a2
     jal ra, read_matrix
     mv t2, a0                               # t2 = input
     addi sp, sp, 8
@@ -87,9 +102,11 @@ classify:
     lw t1, 4(sp)
     addi sp, sp, 8
 
+    lw t0, 0(s3)                            # input_row
+    lw t1, 0(s4)                            # input_column
 
-    sw a1, 16(sp)                           # vector[4] = input_row
-    sw a2, 20(sp)                           # vector[5] = input_column
+    sw t0, 16(sp)                           # vector[4] = input_row
+    sw t1, 20(sp)                           # vector[5] = input_column
     # =====================================
     # RUN LAYERS
     # =====================================
@@ -100,14 +117,11 @@ classify:
     # m0 * input
     # t0, t1, t2 should't be changed
     # malloc memory
-    addi sp, sp, -12
-    sw s0, 0(sp)
-    sw s1, 4(sp)
-    sw s2, 8(sp)
 
-    mv s0, t0                               # m0
-    mv s1, t1                               # m1
-    mv s2, t2                               # input
+
+    mv s3, t0                               # m0
+    mv s4, t1                               # m1
+    mv s5, t2                               # input
 
     lw t3, 0(sp)
     lw t4, 20(sp)
@@ -120,13 +134,13 @@ classify:
     beq a0, x0, error2
     mv a6, a0                               # a6 = start of d
 
-    mv a0, s0                               # a0 (int*)  is the pointer to the start of m0 
+    mv a0, s3                               # a0 (int*)  is the pointer to the start of m0 
     lw t3, 0(sp)
     lw t4, 4(sp)
     mv a1, t3                               # a1 = m0_row
     mv a2, t4                               # a2 = m0_column
 
-    mv a3, s2                               # a3 (int*)  is the pointer to the start of m1
+    mv a3, s4                               # a3 (int*)  is the pointer to the start of m1
     lw t3, 16(sp)
     lw t4, 20(sp)
     mv a4, t3                               # a4 = input_row
@@ -143,21 +157,24 @@ classify:
 
     # m1 * ReLU(m0 * input) 
     addi sp, sp, -4
-        sw a0, 0(sp)
-        lw t3, 8(sp)
-        lw t4, 20(sp)
-        mul t3, t3, t4
-        slli t3, t3, 2
+    sw a0, 0(sp)
+    
+    lw t3, 8(sp)
+    lw t4, 20(sp)
+    mul t3, t3, t4
+    slli t3, t3, 2
 
-        mv a0, t3                               # size of memory
+    mv a0, t3                               # size of memory
 
-        jal ra, malloc
-        beq a0, x0, error2
-        mv a6, a0                               # a6 = start of d
-        lw a0, 0(sp)
+    jal ra, malloc
+    beq a0, x0, error2
+    mv a6, a0                               # a6 = start of d
+    
+    lw a0, 0(sp)
     addi sp, sp, 4
+
     mv t0, a0
-    mv a0, s1                               # a0 = m1
+    mv a0, s4                               # a0 = m1
     lw t3, 8(sp)
     lw t4, 12(sp)
     mv a1, t3                               # a1 = m1_row
@@ -175,10 +192,7 @@ classify:
     lw t0, 8(sp)                            # row
     lw t1, 20(sp)                           # column
 
-    lw s0, 0(sp)
-    lw s1, 4(sp)
-    lw s2, 8(sp)
-    addi sp, sp, 12
+
     addi sp, sp ,24
 
 
@@ -206,7 +220,6 @@ classify:
     # Call argmax
     mv a0, a1
     mv a1, t0
-
     jal ra, argmax
 
     mv t0, a0
@@ -228,7 +241,10 @@ classify_end:
     lw s1, 4(sp)
     lw s2, 8(sp)
     lw ra, 12(sp)
-    addi sp, sp, 16
+    lw s3, 16(sp)
+    lw s4, 20(sp)
+    lw s5, 24(sp)
+    addi sp, sp, 28
     ret
 
 error1:

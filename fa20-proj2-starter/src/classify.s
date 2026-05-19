@@ -50,7 +50,7 @@ classify:
     mv s3, a1
     mv s4, a2
     jal ra, read_matrix
-    mv t0, a0                               # t0 = m0
+    mv t2, a0                               # t2 = m0
     addi sp, sp, 8
 
     lw t0, 0(s3)                            # m0_row
@@ -61,7 +61,7 @@ classify:
     
     # Load pretrained m1
     addi sp, sp, -4
-    sw t0, 0(sp)
+    sw t2, 0(sp)
 
     addi sp, sp, -8
     lw a0, 8(s1)                            # a0 = filename (argv[2])
@@ -70,10 +70,10 @@ classify:
     mv s3, a1
     mv s4, a2
     jal ra, read_matrix
-    mv t1, a0                               # t1 = m1
+    mv t3, a0                               # t3 = m1
     addi sp, sp, 8
 
-    lw t0, 0(sp)
+    lw t2, 0(sp)
     addi sp, sp, 4
 
     lw t0, 0(s3)                            # m1_row
@@ -85,8 +85,8 @@ classify:
     # Load input matrix
     addi sp, sp, -8
 
-    sw t0, 0(sp)
-    sw t1, 4(sp)
+    sw t2, 0(sp)
+    sw t3, 4(sp)
     
     addi sp, sp, -8
     lw a0, 12(s1)                           # a0 = filename (argv[3])
@@ -95,11 +95,11 @@ classify:
     mv s3, a1
     mv s4, a2
     jal ra, read_matrix
-    mv t2, a0                               # t2 = input
+    mv t4, a0                               # t4 = input
     addi sp, sp, 8
 
-    lw t0, 0(sp)
-    lw t1, 4(sp)
+    lw t2, 0(sp)
+    lw t3, 4(sp)
     addi sp, sp, 8
 
     lw t0, 0(s3)                            # input_row
@@ -119,9 +119,11 @@ classify:
     # malloc memory
 
 
-    mv s3, t0                               # m0
-    mv s4, t1                               # m1
-    mv s5, t2                               # input
+    mv s3, t2                               # m0
+    mv s4, t3                               # m1
+    mv s5, t4                               # input
+
+    # =====================================
 
     lw t3, 0(sp)
     lw t4, 20(sp)
@@ -156,14 +158,13 @@ classify:
     jal ra, relu
 
     # m1 * ReLU(m0 * input) 
-    addi sp, sp, -4
-    sw a0, 0(sp)
-    
     lw t3, 8(sp)
     lw t4, 20(sp)
     mul t3, t3, t4
     slli t3, t3, 2
 
+    addi sp, sp, -4
+    sw a0, 0(sp)
     mv a0, t3                               # size of memory
 
     jal ra, malloc

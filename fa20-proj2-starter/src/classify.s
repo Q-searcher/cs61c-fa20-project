@@ -236,6 +236,8 @@ classify:
     li a1, '\n'
     ecall
 
+    mv a0, t0
+
 classify_end:
 
     lw s0, 0(sp)

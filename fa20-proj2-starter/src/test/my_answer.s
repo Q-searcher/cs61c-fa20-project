@@ -51,10 +51,10 @@ classify:
     mv s4, a2
     jal ra, read_matrix
     mv t2, a0                               # t2 = m0
-    lw t0, 0(s3)                            # m0_row
-    lw t1, 0(s4)                            # m0_column
     addi sp, sp, 8
 
+    lw t0, 0(s3)                            # m0_row
+    lw t1, 0(s4)                            # m0_column
 
     sw t0, 0(sp)                            # vector[0] = m0_row
     sw t1, 4(sp)                            # vector[1] = m0_column
@@ -71,13 +71,13 @@ classify:
     mv s4, a2
     jal ra, read_matrix
     mv t3, a0                               # t3 = m1
-
-    lw t0, 0(s3)                            # m1_row
-    lw t1, 0(s4)                            # m1_column
     addi sp, sp, 8
 
     lw t2, 0(sp)
     addi sp, sp, 4
+
+    lw t0, 0(s3)                            # m1_row
+    lw t1, 0(s4)                            # m1_column
 
     sw t0, 8(sp)                            # vector[2] = m1_row
     sw t1, 12(sp)                           # vector[3] = m1_column
@@ -96,14 +96,14 @@ classify:
     mv s4, a2
     jal ra, read_matrix
     mv t4, a0                               # t4 = input
-    lw t0, 0(s3)                            # input_row
-    lw t1, 0(s4)                            # input_column
     addi sp, sp, 8
 
     lw t2, 0(sp)
     lw t3, 4(sp)
     addi sp, sp, 8
 
+    lw t0, 0(s3)                            # input_row
+    lw t1, 0(s4)                            # input_column
 
     sw t0, 16(sp)                           # vector[4] = input_row
     sw t1, 20(sp)                           # vector[5] = input_column
@@ -148,11 +148,7 @@ classify:
     mv a4, t3                               # a4 = input_row
     mv a5, t4                               # a5 = input_column
 
-    addi sp, sp, -4
-    sw a6, 0(sp)                           # store the address of d
     jal ra, matmul
-    lw a6, 0(sp)                           # load the address of d
-    addi sp, sp, 4
 
     # ReLU(m0 * input) 
     mv a0, a6                               # a0 = the pointer to the array
@@ -190,11 +186,7 @@ classify:
     mv a4, t3                               # a4
     mv a5, t4                               # a5
 
-    addi sp, sp, -4
-    sw a6, 0(sp)                           # store the address of d
     jal ra, matmul
-    lw a6, 0(sp)                           # load the address of d
-    addi sp, sp, 4
 
     mv t3, a6                               # safe the result
 
